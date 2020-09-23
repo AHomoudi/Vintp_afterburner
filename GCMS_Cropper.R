@@ -1,5 +1,5 @@
 #===============================================================================
-#This routine perform CDO operator sellonlatbox  on a list of in directory for
+#This routine performs CDO operator sellonlatbox  on a list of in directory for
 # the area of interest.
 #                  Written by :Ahmed Homoudi
 #                      September 2020
