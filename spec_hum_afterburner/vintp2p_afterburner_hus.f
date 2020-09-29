@@ -39,4 +39,3 @@ do plev=1,req
  end do
 end do   
 end subroutine hus_vertical_interpolation
-
