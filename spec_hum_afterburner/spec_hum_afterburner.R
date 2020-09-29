@@ -172,10 +172,10 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
   #ncatt_put(ncoutput,0,"history",history)
   #ncatt_put(ncoutput,0,"Conventions",Conventions$value)
 
-  #history <- paste("P.J. Bartlein", date(), sep=", ")
+  #history <- paste(bla bla bla ...etc )
   #ncatt_put(ncoutput,0,"history",history)
   #ncatt_put(ncoutput,0,"Conventions",Conventions$value)
-  #estimation fo the divergence 
+
 
   
   
