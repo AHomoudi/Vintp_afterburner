@@ -13,5 +13,5 @@ It also includes some rountines to Prepare CMIP5 simulation output to e.g:
 yearly files, seperate variables  select box of area under consideration.
 
 
-                         Author: Ahmed.A.B.Homoudi
-                            Date:October 2020
+Author: Ahmed.A.B.Homoudi
+Date:October 2020
