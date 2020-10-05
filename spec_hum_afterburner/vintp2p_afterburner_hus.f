@@ -15,7 +15,7 @@ do plev=1,req
    do y=1,n 
     do s=1,o	
 !above uppest level
-    if(pres(plev) .LT. pressure_full_level(x,y,o,t)) then 
+    if(pres(plev) .LT. pressure_full_level(x,y,1,t)) then 
      hus_on_press_level(x,y,plev,t) = NaN
     end if 
 ! in between levels
@@ -30,8 +30,8 @@ do plev=1,req
      + grad_hus_p * diff_p 
     end if  
 ! extrapolation below the ground  
-    if(pres(plev) .GT. pressure_full_level(x,y,1,t)) then
-     hus_on_press_level(x,y,plev,t) = hus_on_model_level(x,y,1,t)
+    if(pres(plev) .GT. pressure_full_level(x,y,o,t)) then
+     hus_on_press_level(x,y,plev,t) = hus_on_model_level(x,y,o,t)
     end if
     end do 
    end do 

@@ -16,31 +16,31 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
   ncin<-nc_open(spec_hum_file)
   
   DIM<-ncin[["var"]][[blabla[1]]][["varsize"]]
-    
+  
   spec_hum_data<-ff(ncvar_get(ncin,blabla[1]),
-                  dim = DIM,
-                  dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
-                                  latitude= ncin[["dim"]][["lat"]][["vals"]],
-                                  lev = ncin[["dim"]][["lev"]][["vals"]],
-                                  TIME =ncin[["dim"]][["time"]][["vals"]]))
+                    dim = DIM,
+                    dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
+                                    latitude= ncin[["dim"]][["lat"]][["vals"]],
+                                    lev = ncin[["dim"]][["lev"]][["vals"]],
+                                    TIME =ncin[["dim"]][["time"]][["vals"]]))
   DIMNAMES<- dimnames(spec_hum_data)
   
   DIMNAMES[["lev"]]<- Rev(DIMNAMES[["lev"]])
   
   spec_hum_data<-ff(Rev(spec_hum_data[],3),dim = DIM,
-                dimnames = DIMNAMES)
+                    dimnames = DIMNAMES)
   dim(spec_hum_data)
- 
+  
   # Read extra data 
-  p0<-ncvar_get(ncin,"p0")
-  a<-Rev(ncvar_get(ncin,"a"))
+  p0<-1.0
+  a<-Rev(ncvar_get(ncin,"ap"))
   b<-Rev(ncvar_get(ncin,"b"))
   
   longitude <- ncin[["dim"]][["lon"]][["vals"]]
   latitude<- ncin[["dim"]][["lat"]][["vals"]]
   lev <- Rev(ncin[["dim"]][["lev"]][["vals"]])
   TIME =ncin[["dim"]][["time"]][["vals"]]
-
+  
   #2============================================================================ 
   
   DIM<-ncin[["var"]][["ps"]][["varsize"]]
@@ -53,7 +53,7 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
                                        TIME =ncin[["dim"]][["time"]][["vals"]]))
   
   dim(surface_pressure)
-
+  
   #3============================================================================
   
   #load pressure on model level calculator 
@@ -77,7 +77,7 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
   pressure<-ff(result,dim = dim(spec_hum_data),dimnames = dimnames(spec_hum_data))
   
   rm(result)
-
+  
   #4============================================================================
   
   #load vertical interpolate subroutine for specific humidity
@@ -152,7 +152,7 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
                  time_span[1],"-",time_span[length(time_span)],"_.nc")
   #netCDF file location 
   
-  ncpath <- "hus/"
+  ncpath <- paste0(blabla[1],"/")
   
   ncfname <- paste0(ncpath, ncname)
   
@@ -176,16 +176,16 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
   #ncatt_put(ncoutput,0,"institution",institution$value)
   #ncatt_put(ncoutput,0,"source",datasource$value)
   #ncatt_put(ncoutput,0,"references",references$value)
-
+  
   #history <- paste( bla bla bla ....etc )
   #ncatt_put(ncoutput,0,"history",history)
   #ncatt_put(ncoutput,0,"Conventions",Conventions$value)
-
+  
   #history <- paste(bla bla bla ...etc )
   #ncatt_put(ncoutput,0,"history",history)
   #ncatt_put(ncoutput,0,"Conventions",Conventions$value)
-
-
+  
+  
   
   
   

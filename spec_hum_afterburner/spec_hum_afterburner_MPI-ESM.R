@@ -1,12 +1,11 @@
-#A function that will receive Specific_humidity nc file +  required 
-#pressure levels then  write the interpolated values to a netcdf file 
+#A function that will receive Specific_humidity nc file +surface air pressure +   
+#required pressure levels then  write the interpolated values to a netcdf file 
 
-Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
+Specific_humidity_afterburner<-function(spec_hum_file,pressure_file,req_press_levels){
   
   require(ff)
   require(ncdf4)
   require(stringi)
-  require(DescTools)
   #1============================================================================ 
   #Reading data out of netCDF files 
   
@@ -15,38 +14,34 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
   #Read specific humidity 
   ncin<-nc_open(spec_hum_file)
   
-  DIM<-ncin[["var"]][[blabla[1]]][["varsize"]]
+  DIM<-ncin[["var"]][["q"]][["size"]]
     
-  spec_hum_data<-ff(ncvar_get(ncin,blabla[1]),
+  spec_hum_data<-ff(ncvar_get(ncin,"q"),
                   dim = DIM,
                   dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
                                   latitude= ncin[["dim"]][["lat"]][["vals"]],
                                   lev = ncin[["dim"]][["lev"]][["vals"]],
                                   TIME =ncin[["dim"]][["time"]][["vals"]]))
-  DIMNAMES<- dimnames(spec_hum_data)
-  
-  DIMNAMES[["lev"]]<- Rev(DIMNAMES[["lev"]])
-  
-  spec_hum_data<-ff(Rev(spec_hum_data[],3),dim = DIM,
-                dimnames = DIMNAMES)
   dim(spec_hum_data)
  
   # Read extra data 
-  p0<-ncvar_get(ncin,"p0")
-  a<-Rev(ncvar_get(ncin,"a"))
-  b<-Rev(ncvar_get(ncin,"b"))
+  p0<-1.0
+  a<-ncvar_get(ncin,"hyam")
+  b<-ncvar_get(ncin,"hybm")
   
   longitude <- ncin[["dim"]][["lon"]][["vals"]]
   latitude<- ncin[["dim"]][["lat"]][["vals"]]
-  lev <- Rev(ncin[["dim"]][["lev"]][["vals"]])
+  lev <- ncin[["dim"]][["lev"]][["vals"]]
   TIME =ncin[["dim"]][["time"]][["vals"]]
+  
 
   #2============================================================================ 
+  ncin<-nc_open(pressure_file)  
   
-  DIM<-ncin[["var"]][["ps"]][["varsize"]]
+  DIM<-ncin[["var"]][["sp"]][["size"]]
   
   #Read surface air pressure 
-  surface_pressure<-ff(ncvar_get(ncin,"ps"),
+  surface_pressure<-ff(ncvar_get(ncin,"sp"),
                        dim = DIM,
                        dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
                                        latitude= ncin[["dim"]][["lat"]][["vals"]],
@@ -114,6 +109,8 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
   #5============================================================================
   # Writing netcdf file of the interpolated values 
   
+  ncin<-nc_open(spec_hum_file)
+  
   dimLON  <- ncdim_def('lon', units=ncin[["dim"]][["lon"]][["units"]],
                        longname='longitude',
                        vals=longitude)
@@ -132,10 +129,10 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
   # define variables
   fillvalue <- 1e32
   
-  dlname <- ncin[["var"]][[blabla[1]]][["longname"]]
+  dlname <- "Specific Humidity"
   
   var_def <- ncvar_def(name = blabla[1],
-                       units = ncin[["var"]][[blabla[1]]][["units"]],
+                       units = "kg/kg",
                        list(dimLON,dimLAT,dimPLEV,dimTime),
                        fillvalue,dlname,prec="double")
   
@@ -193,4 +190,4 @@ Specific_humidity_afterburner<-function(spec_hum_file,req_press_levels){
 #Test
 #spec_hum_file <-q_nc.files[1]
 #req_press_levels<- required_PLev
-
+#pressure_file <- ps_nc.files[1]
