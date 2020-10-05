@@ -16,11 +16,11 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   DIM<-ncin[["var"]][[blabla[1]]][["varsize"]]
   
   wind_data<-ff(ncvar_get(ncin,blabla[1]),
-                  dim = DIM,
-                  dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
-                                  latitude= ncin[["dim"]][["lat"]][["vals"]],
-                                  lev = ncin[["dim"]][["lev"]][["vals"]],
-                                  TIME =ncin[["dim"]][["time"]][["vals"]]))
+                dim = DIM,
+                dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
+                                latitude= ncin[["dim"]][["lat"]][["vals"]],
+                                lev = ncin[["dim"]][["lev"]][["vals"]],
+                                TIME =ncin[["dim"]][["time"]][["vals"]]))
   
   DIMNAMES<- dimnames(wind_data)
   
@@ -28,28 +28,37 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   
   wind_data<-ff(Rev(wind_data[],3),dim = DIM,
                 dimnames = DIMNAMES)
-
-  dim(wind_data)
   
-  p0<-ncvar_get(ncin,"p0")
-  a<-Rev(ncvar_get(ncin,"a"))
-  b<-Rev(ncvar_get(ncin,"b"))
+  dim(wind_data)
   
   longitude <- ncin[["dim"]][["lon"]][["vals"]]
   latitude<- ncin[["dim"]][["lat"]][["vals"]]
   lev <- Rev(ncin[["dim"]][["lev"]][["vals"]])
   TIME =ncin[["dim"]][["time"]][["vals"]]
   
+  ncin<-nc_open("vcrs.nc")
+  
+  p0<-1.0
+  a<-Rev(ncvar_get(ncin,"lev"))
+  b<-Rev(ncvar_get(ncin,"b"))
+  
+  which(longitude[1]== ncin[["dim"]][["lon"]][["vals"]])
+  
+  orog<-ncvar_get(ncin,"orog")
+  
+  dim(orog)
+
+  
   #2============================================================================ 
   
   DIM<-ncin[["var"]][["ps"]][["varsize"]]
-       
-
+  
+  
   surface_pressure<-ff(ncvar_get(ncin,"ps"),
                        dim = DIM,
                        dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
-                                latitude= ncin[["dim"]][["lat"]][["vals"]],
-                                TIME =ncin[["dim"]][["time"]][["vals"]]))
+                                       latitude= ncin[["dim"]][["lat"]][["vals"]],
+                                       TIME =ncin[["dim"]][["time"]][["vals"]]))
   
   dim(surface_pressure)
   #3============================================================================ 
@@ -83,7 +92,7 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   DIM<-dim(wind_data)
   
   output_DIM<-c(DIM[1],DIM[2],length(req_press_levels),DIM[4])
-    
+  
   #control<-ff(array(0.00,dim =output_DIM),dim =output_DIM)
   
   output_array<-ff(array(0.00,dim =output_DIM),dim =output_DIM)
@@ -144,8 +153,8 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   
   
   ncname<-paste0(blabla[1],"_6hrPlev_",blabla[3],"_",blabla[4],
-                          "_",blabla[5],"_",
-                          time_span[1],"-",time_span[length(time_span)],"_.nc")
+                 "_",blabla[5],"_",
+                 time_span[1],"-",time_span[length(time_span)],"_.nc")
   #netCDF file location 
   
   ncpath <- paste0(blabla[1],"/")
@@ -166,7 +175,7 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   ncatt_put(ncoutput,"time","axis","T")
   
   nc_close(ncoutput)
-
+  
   # add global attributes
   #ncatt_put(ncoutput,0,"title",title$value)
   #ncatt_put(ncoutput,0,"institution",institution$value)
@@ -175,8 +184,8 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   #history <- paste("P.J. Bartlein", date(), sep=", ")
   #ncatt_put(ncoutput,0,"history",history)
   #ncatt_put(ncoutput,0,"Conventions",Conventions$value)
-
-
+  
+  
   
 }
 #Test

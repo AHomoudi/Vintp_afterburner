@@ -1,55 +1,51 @@
-#A function that will receive wind nc files + geopotential surface +  required 
+#A function that will receive wind nc files + surface air pressure +  required 
 #pressure levels then  write the interpolated values to a netcdf file 
 
-Wind_afterburner<-function(wind_file,req_press_levels){
+Wind_afterburner<-function(wind_file,pressure_file,req_press_levels){
   
   require(ff)
   require(ncdf4)
   require(stringi)
-  require(DescTools)
   #1============================================================================  
   blabla <- unlist(strsplit(unlist(strsplit(wind_file,"[/]"))[2],"_"))
   
+  variable_infile <-str_split_fixed(blabla[1],pattern = "", n = 2)
   
   ncin<-nc_open(wind_file)
   
-  DIM<-ncin[["var"]][[blabla[1]]][["varsize"]]
+  DIM<-ncin[["var"]][[variable_infile[1]]][["varsize"]]
   
-  wind_data<-ff(ncvar_get(ncin,blabla[1]),
-                  dim = DIM,
-                  dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
-                                  latitude= ncin[["dim"]][["lat"]][["vals"]],
-                                  lev = ncin[["dim"]][["lev"]][["vals"]],
-                                  TIME =ncin[["dim"]][["time"]][["vals"]]))
+  wind_data<-ff(ncvar_get(ncin,variable_infile[1]),
+                dim = DIM,
+                dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
+                                latitude= ncin[["dim"]][["lat"]][["vals"]],
+                                lev = ncin[["dim"]][["lev"]][["vals"]],
+                                TIME =ncin[["dim"]][["time"]][["vals"]]))
   
-  DIMNAMES<- dimnames(wind_data)
   
-  DIMNAMES[["lev"]]<- Rev(DIMNAMES[["lev"]])
   
-  wind_data<-ff(Rev(wind_data[],3),dim = DIM,
-                dimnames = DIMNAMES)
-
   dim(wind_data)
   
-  p0<-ncvar_get(ncin,"p0")
-  a<-Rev(ncvar_get(ncin,"a"))
-  b<-Rev(ncvar_get(ncin,"b"))
+  p0<-1.0
+  a<-ncvar_get(ncin,"hyam")
+  b<-ncvar_get(ncin,"hybm")
   
   longitude <- ncin[["dim"]][["lon"]][["vals"]]
   latitude<- ncin[["dim"]][["lat"]][["vals"]]
-  lev <- Rev(ncin[["dim"]][["lev"]][["vals"]])
+  lev <- ncin[["dim"]][["lev"]][["vals"]]
   TIME =ncin[["dim"]][["time"]][["vals"]]
   
-  #2============================================================================ 
   
-  DIM<-ncin[["var"]][["ps"]][["varsize"]]
-       
-
-  surface_pressure<-ff(ncvar_get(ncin,"ps"),
+  #2============================================================================ 
+  ncin<-nc_open(pressure_file)
+  
+  DIM<-ncin[["var"]][["sp"]][["varsize"]]
+  
+  surface_pressure<-ff(ncvar_get(ncin,"sp"),
                        dim = DIM,
                        dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
-                                latitude= ncin[["dim"]][["lat"]][["vals"]],
-                                TIME =ncin[["dim"]][["time"]][["vals"]]))
+                                       latitude= ncin[["dim"]][["lat"]][["vals"]],
+                                       TIME =ncin[["dim"]][["time"]][["vals"]]))
   
   dim(surface_pressure)
   #3============================================================================ 
@@ -60,30 +56,32 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   
   pressure<-ff(array(0.00),dim =dim(wind_data))
   
+  DIM <- dim(wind_data)
+  
   result<- array(.Fortran("press_calc",ps=as.numeric(surface_pressure[]),
                           p0=as.numeric(p0),
                           a=as.numeric(a),
                           b=as.numeric(b),
                           m=as.integer(DIM[1]),
                           n=as.integer(DIM[2]),
-                          o=as.integer(length(a)),
-                          p=as.integer(DIM[3]),
+                          o=as.integer(DIM[3]),
+                          p=as.integer(DIM[4]),
                           press=as.numeric(pressure[]))$press,
-                 dim =c(DIM[1],DIM[2],length(a),DIM[3]))
+                 dim =DIM)
   
   pressure<-ff(result,dim = dim(wind_data),dimnames = dimnames(wind_data))
   
   rm(result)
   #4============================================================================ 
   #load vertical interpolate subroutine 
-  dyn.load("wind_afterburner/vintp2p_afterburner_wind.so")
+  dyn.load("wind_afterburner/vintp2p_afterburner_wind_MPI-ESM.so")
   #check
   is.loaded("wind_vertical_interpolation")
   
   DIM<-dim(wind_data)
   
   output_DIM<-c(DIM[1],DIM[2],length(req_press_levels),DIM[4])
-    
+  
   #control<-ff(array(0.00,dim =output_DIM),dim =output_DIM)
   
   output_array<-ff(array(0.00,dim =output_DIM),dim =output_DIM)
@@ -128,13 +126,24 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   # define variables
   fillvalue <- 1e32
   
-  dlname <- ncin[["var"]][[blabla[1]]][["longname"]]
+  ncin<-nc_open(wind_file)
   
-  var_def <- ncvar_def(name = blabla[1],
-                       units = ncin[["var"]][[blabla[1]]][["units"]],
-                       list(dimLON,dimLAT,dimPLEV,dimTime),
-                       fillvalue,dlname,prec="double")
+  if (variable_infile[1]=="u"){
+    dlname <-"Eastward Wind"
+    var_def <- ncvar_def(name = "ua",
+                         units = ncin[["var"]][[variable_infile[1]]][["units"]],
+                         list(dimLON,dimLAT,dimPLEV,dimTime),
+                         fillvalue,dlname,prec="double")
+  } 
+  if (variable_infile[1]=="v"){
+    dlname <-"Northward Wind"
+    var_def <- ncvar_def(name = "va",
+                         units = ncin[["var"]][[variable_infile[1]]][["units"]],
+                         list(dimLON,dimLAT,dimPLEV,dimTime),
+                         fillvalue,dlname,prec="double")
+  }
   
+
   #netcdf file name 
   time_span<- stri_remove_empty(unlist(strsplit(system(paste("cdo showtimestamp",wind_file),
                                                        intern = TRUE),"[ ]")))
@@ -144,8 +153,8 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   
   
   ncname<-paste0(blabla[1],"_6hrPlev_",blabla[3],"_",blabla[4],
-                          "_",blabla[5],"_",
-                          time_span[1],"-",time_span[length(time_span)],"_.nc")
+                 "_",blabla[5],"_",
+                 time_span[1],"-",time_span[length(time_span)],"_.nc")
   #netCDF file location 
   
   ncpath <- paste0(blabla[1],"/")
@@ -166,7 +175,7 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   ncatt_put(ncoutput,"time","axis","T")
   
   nc_close(ncoutput)
-
+  
   # add global attributes
   #ncatt_put(ncoutput,0,"title",title$value)
   #ncatt_put(ncoutput,0,"institution",institution$value)
@@ -175,10 +184,11 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   #history <- paste("P.J. Bartlein", date(), sep=", ")
   #ncatt_put(ncoutput,0,"history",history)
   #ncatt_put(ncoutput,0,"Conventions",Conventions$value)
-
-
+  
+  
   
 }
 #Test
 #wind_file <-u_nc.files[1]
 #req_press_levels<- required_PLev
+#pressure_file <- ps_nc.files[1]
