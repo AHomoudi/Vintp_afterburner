@@ -1,7 +1,7 @@
 #A function that will receive wind nc files + geopotential surface +  required 
 #pressure levels then  write the interpolated values to a netcdf file 
 
-Wind_afterburner<-function(wind_file,req_press_levels){
+Wind_afterburner<-function(wind_file,b,req_press_levels){
   
   require(ff)
   require(ncdf4)
@@ -40,9 +40,10 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   
   p0<-1.0
   a<-Rev(ncvar_get(ncin,"lev"))
-  b<-Rev(ncvar_get(ncin,"b"))
-  
-  which(longitude[1]== ncin[["dim"]][["lon"]][["vals"]])
+  a_bnds<-Rev(ncvar_get(ncin,"lev_bnds"))
+  #b<-Rev(ncvar_get(ncin,"b"))
+  b<-Rev(b)
+  #which(longitude[1]== ncin[["dim"]][["lon"]][["vals"]])
   
   orog<-ncvar_get(ncin,"orog")
   
@@ -50,6 +51,8 @@ Wind_afterburner<-function(wind_file,req_press_levels){
 
   
   #2============================================================================ 
+  
+  ncin<-nc_open(pressure_file)
   
   DIM<-ncin[["var"]][["ps"]][["varsize"]]
   
@@ -67,20 +70,26 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   #check
   is.loaded("press_calc")
   
-  pressure<-ff(array(0.00),dim =dim(wind_data))
+  DIM<-dim(orog)
   
-  result<- array(.Fortran("press_calc",ps=as.numeric(surface_pressure[]),
+  height_levels<-ff(array(0.00),dim =c(DIM[1],DIM[2],length(a)))
+  
+
+  
+  result<- array(.Fortran("press_calc",ps=as.numeric(orog),
                           p0=as.numeric(p0),
                           a=as.numeric(a),
                           b=as.numeric(b),
                           m=as.integer(DIM[1]),
                           n=as.integer(DIM[2]),
                           o=as.integer(length(a)),
-                          p=as.integer(DIM[3]),
-                          press=as.numeric(pressure[]))$press,
-                 dim =c(DIM[1],DIM[2],length(a),DIM[3]))
+                          p=as.integer(1.0),
+                          press=as.numeric(height_levels[]))$press,
+                 dim =c(DIM[1],DIM[2],length(a)))
   
-  pressure<-ff(result,dim = dim(wind_data),dimnames = dimnames(wind_data))
+  pressure<-ff(101325 * exp(result/ - 7000),
+               dim = c(DIM[1],DIM[2],length(a)),
+               dimnames = dimnames(wind_data)[-4])
   
   rm(result)
   #4============================================================================ 

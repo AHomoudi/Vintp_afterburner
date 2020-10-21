@@ -38,7 +38,7 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   longitude <- ncin[["dim"]][["lon"]][["vals"]]
   latitude<- ncin[["dim"]][["lat"]][["vals"]]
   lev <- Rev(ncin[["dim"]][["lev"]][["vals"]])
-  TIME =ncin[["dim"]][["time"]][["vals"]]
+  TIME <-ncin[["dim"]][["time"]][["vals"]]
   
   #2============================================================================ 
   
@@ -166,6 +166,7 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   ncatt_put(ncoutput,"time","axis","T")
   
   nc_close(ncoutput)
+  nc_close(ncin)
 
   # add global attributes
   #ncatt_put(ncoutput,0,"title",title$value)
@@ -175,6 +176,10 @@ Wind_afterburner<-function(wind_file,req_press_levels){
   #history <- paste("P.J. Bartlein", date(), sep=", ")
   #ncatt_put(ncoutput,0,"history",history)
   #ncatt_put(ncoutput,0,"Conventions",Conventions$value)
+  
+  rm(list=ls())
+  
+  gc()
 
 
   
