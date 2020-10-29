@@ -91,7 +91,7 @@ source("temp_afterburner/temp_afterburner_MPI-ESM.R")
 
 for (x in 1:length(t_nc.files)){
   
-  file_model<-unlist(str_split(unlist(str_split(q_nc.files[x], "[/]"))[2],"_"))[3]
+  file_model<-unlist(str_split(unlist(str_split(t_nc.files[x], "[/]"))[2],"_"))[3]
   
   surface_geopotential <-grep(file_model, z_nc.files, value=TRUE, fixed=TRUE)
   

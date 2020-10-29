@@ -28,6 +28,7 @@
 
 #1==============================================================================
 library(stringr)
+library(affxparser)
 
 #2==============================================================================
 #Listing all files in directory
@@ -50,6 +51,7 @@ required_PLev<-seq(85000,100000,2500) #Pa
 for (x in 1:length(u_nc.files)){
     Wind_afterburner(wind_file = u_nc.files[x],
                      req_press_levels = required_PLev)
+    #gc()
 
 }
 
@@ -62,6 +64,7 @@ required_PLev<-seq(85000,100000,2500) #Pa
 for (x in 1:length(v_nc.files)){
     Wind_afterburner(wind_file = v_nc.files[x],
                      req_press_levels = required_PLev)
+    gc()
     
 }
 #5==============================================================================
@@ -74,6 +77,7 @@ for (x in 1:length(q_nc.files)){
     
     Specific_humidity_afterburner(spec_hum_file = q_nc.files[x],
                                   req_press_levels = required_PLev)
+    gc()
 }
 
 #6==============================================================================
@@ -91,6 +95,7 @@ for (x in 1:length(t_nc.files)){
     Temperature_afterburner(temp_file =t_nc.files[x],
                             surf_gepo = surface_geopotential,
                             req_press_levels = required_PLev)
+    gc()
 }
 #=================================END===========================================
 
@@ -100,4 +105,4 @@ for (x in 1:length(t_nc.files)){
 #t_nc.files<-t_nc.files[c(2,3,4,7,10)]
 #q_nc.files<-q_nc.files[c(2,3,4,7,10)]
 
-#z_nc.files<-z_nc.files[c(3,4,5,8,11)]
+#z_nc.files<-z_nc.files[c(2,3,4,7,10)]
