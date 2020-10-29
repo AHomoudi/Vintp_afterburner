@@ -1,0 +1,33 @@
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,CanESM2_griddes.txt orog_fx_CanESM2_historical_r0i0p0.nc orog_fx_CanESM2_historical_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from gaussian (128x64) to lonlat (88x44) grid
+cdo remapbil: Processed 8192 values from 1 variable over 1 timestep [0.02s 49MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,CNRM-CM5_griddes.txt orog_fx_CNRM-CM5_amip_r0i0p0.nc orog_fx_CNRM-CM5_amip_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from gaussian (256x128) to lonlat (175x88) grid
+cdo remapbil: Processed 32768 values from 1 variable over 1 timestep [0.01s 51MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,CSIRO-Mk3-6-0_griddes.txt orog_fx_CSIRO-Mk3-6-0_historical_r0i0p0.nc  orog_fx_CSIRO-Mk3-6-0_historical_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from gaussian (192x96) to lonlat (131x68) grid
+cdo remapbil: Processed 18432 values from 1 variable over 1 timestep [0.01s 50MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,GFDL-ESM2M_griddes.txt orog_fx_GFDL-ESM2M_historical_r0i0p0.nc orog_fx_GFDL-ESM2M_historical_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from lonlat (144x90) to lonlat (99x64) grid
+cdo remapbil: Processed 12960 values from 1 variable over 1 timestep [0.01s 49MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,HadGEM2-ES_griddes.txt orog_fx_HadGEM2-ES_historical_r0i0p0.nc orog_fx_HadGEM2-ES_historical_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from lonlat (192x145) to lonlat (99x64) grid
+cdo remapbil: Processed 27840 values from 1 variable over 1 timestep [0.00s 49MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,IPSL-CM5A-MR_griddes.txt orog_fx_IPSL-CM5A-MR_amip_r0i0p0.nc orog_fx_IPSL-CM5A-MR_amip_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from lonlat (144x143) to lonlat (99x97) grid
+cdo remapbil: Processed 20592 values from 1 variable over 1 timestep [0.00s 49MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,MIROC-ESM_griddes.txt orog_fx_MIROC5_historical_r0i0p0.nc orog_fx_MIROC5_historical_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from gaussian (256x128) to lonlat (88x44) grid
+cdo remapbil: Processed 32768 values from 1 variable over 1 timestep [0.01s 49MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,NorESM1-M_griddes.txt orog_fx_NorESM1-M_historical_r0i0p0.nc orog_fx_NorESM1-M_historical_r0i0p0_.nc 
+,cdo remapbil: SCRIP bilinear weights from lonlat (144x96) to lonlat (99x66) grid
+cdo remapbil: Processed 13824 values from 1 variable over 1 timestep [0.01s 48MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,MPI-ESM-MR_griddes.txt orog_fx_MPI-ESM-MR_historical_r0i0p0.nc orog_fx_MPI-ESM-MR_historical_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from gaussian (192x96) to lonlat (130x66) grid
+cdo remapbil: Processed 18432 values from 1 variable over 1 timestep [0.00s 49MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ cdo remapbil,MPI-ESM-LR_griddes.txt orog_fx_MPI-ESM-LR_historical_r0i0p0.nc orog_fx_MPI-ESM-LR_historical_r0i0p0_.nc 
+cdo remapbil: SCRIP bilinear weights from gaussian (192x96) to lonlat (130x66) grid
+cdo remapbil: Processed 18432 values from 1 variable over 1 timestep [0.00s 49MB]
+ahmed@ahmed-HP-EliteBook-840-G3:/media/ahmed/Volume/Vintp_afterburner/Vintp_afterburner/surface$ 
+
+
