@@ -33,7 +33,7 @@ Wind_afterburner<-function(wind_file,pressure_file,req_press_levels){
   longitude <- ncin[["dim"]][["lon"]][["vals"]]
   latitude<- ncin[["dim"]][["lat"]][["vals"]]
   lev <- ncin[["dim"]][["lev"]][["vals"]]
-  TIME =ncin[["dim"]][["time"]][["vals"]]
+  TIME <- ncin[["dim"]][["time"]][["vals"]]
   
   
   #2============================================================================ 
@@ -58,14 +58,15 @@ Wind_afterburner<-function(wind_file,pressure_file,req_press_levels){
   
   DIM <- dim(wind_data)
   
-  result<- array(.Fortran("press_calc",ps=as.numeric(surface_pressure[]),
-                          p0=as.numeric(p0),
-                          a=as.numeric(a),
-                          b=as.numeric(b),
+  result<- array(.Fortran("press_calc",
                           m=as.integer(DIM[1]),
                           n=as.integer(DIM[2]),
                           o=as.integer(DIM[3]),
                           p=as.integer(DIM[4]),
+                          ps=as.numeric(surface_pressure[]),
+                          p0=as.numeric(p0),
+                          a=as.numeric(a),
+                          b=as.numeric(b),
                           press=as.numeric(pressure[]))$press,
                  dim =DIM)
   
@@ -74,7 +75,7 @@ Wind_afterburner<-function(wind_file,pressure_file,req_press_levels){
   rm(result)
   #4============================================================================ 
   #load vertical interpolate subroutine 
-  dyn.load("wind_afterburner/vintp2p_afterburner_wind_MPI-ESM.so")
+  dyn.load("wind_afterburner/vintp2p_afterburner_wind.so")
   #check
   is.loaded("wind_vertical_interpolation")
   
@@ -87,14 +88,14 @@ Wind_afterburner<-function(wind_file,pressure_file,req_press_levels){
   output_array<-ff(array(0.00,dim =output_DIM),dim =output_DIM)
   
   result<- array(.Fortran("wind_vertical_interpolation",
-                          wind_on_model_level=as.numeric(wind_data[]),
-                          pres=as.numeric(req_press_levels),
-                          pressure_full_level=as.numeric(pressure[]),
                           m=as.integer(DIM[1]),
                           n=as.integer(DIM[2]),
                           o=as.integer(DIM[3]),
                           p=as.integer(DIM[4]),
                           req = as.integer(length(req_press_levels)),
+                          pres=as.numeric(req_press_levels),
+                          pressure_full_level=as.numeric(pressure[]),
+                          wind_on_model_level=as.numeric(wind_data[]),
                           wind_on_press_level=as.numeric(output_array[]))$wind_on_press_level,
                  dim =output_DIM)
   

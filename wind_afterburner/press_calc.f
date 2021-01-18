@@ -1,4 +1,4 @@
-	subroutine press_calc(ps,p0,a,b,m,n,o,p,press)
+	subroutine press_calc(m,n,o,p,ps,p0,a,b,press)
 	implicit none
 	integer :: m,n,o,p
 	integer :: x,y,s,t

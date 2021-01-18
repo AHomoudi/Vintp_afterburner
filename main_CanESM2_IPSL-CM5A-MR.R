@@ -29,6 +29,7 @@
 
 #1==============================================================================
 library(stringr)
+library(magrittr)
 
 #2==============================================================================
 #Listing all files in directory
@@ -103,5 +104,5 @@ for (x in 1:length(t_nc.files)){
 #t_nc.files<-t_nc.files[c(1,6)]
 #q_nc.files<-q_nc.files[c(1,6)]
 
-#z_nc.files<-z_nc.files[c(2,7)]
+#z_nc.files<-z_nc.files[c(1,5)]
 
