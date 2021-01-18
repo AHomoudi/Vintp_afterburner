@@ -1,7 +1,7 @@
-subroutine ta_vertical_interpolation(ta_on_model_level,pres, geop,&
-	pressure_full_level,m,n,o,p,req,surface_pressure,ta_on_press_level)
+subroutine ta_vertical_interpolation(m,n,o,p,req,pres,geop,&
+	pressure_full_level,surface_pressure,ta_on_model_level,ta_on_press_level)
 implicit none
-integer :: m,n,o,p,q,req
+integer :: m,n,o,p,q,req,o_sub
 integer :: x,y,s,z,t,plev
 double precision ::pres(req),ta_on_model_level(m,n,o,p)
 double precision ::geop(m,n)
@@ -14,11 +14,12 @@ real ::PlanetGrav = 9.80665
 real ::PlanetRD = 287.058
 real ::zlapse = 0.0065
 zrg   = 1.0 / PlanetGrav
+o_sub = o - 1
 do plev=1,req
  do t=1,p 
   do x=1,m
    do y=1,n 
-    do s=1,o	
+    do s=1,o_sub	
 !above uppest level
      if(pres(plev) .LT. pressure_full_level(x,y,1,t)) then 
       ta_on_press_level(x,y,plev,t) = sqrt(arg) 

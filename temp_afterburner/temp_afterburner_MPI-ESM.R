@@ -41,7 +41,7 @@ Temperature_afterburner<-function(temp_file,pressure_file,surf_gepo,req_press_le
   longitude <- ncin[["dim"]][["lon"]][["vals"]]
   latitude<- ncin[["dim"]][["lat"]][["vals"]]
   lev <- ncin[["dim"]][["lev"]][["vals"]]
-  TIME =ncin[["dim"]][["time"]][["vals"]]
+  TIME <- ncin[["dim"]][["time"]][["vals"]]
   
 
   #2============================================================================ 
@@ -63,8 +63,12 @@ Temperature_afterburner<-function(temp_file,pressure_file,surf_gepo,req_press_le
   #read Geopotential data 
   ncin<-nc_open(surf_gepo)
   
-  surf_gepo_array<-ff(ncvar_get(ncin,"z",start =c(1,1,6)),
-                      dim = dim(ncvar_get(ncin,"z",start =c(1,1,6))),
+  med <- ncvar_get(ncin,"orog")
+  
+  H<-(med * 6356.766e03)*9.80665/(med + 6356.766e03)
+  
+  surf_gepo_array<-ff(H,
+                      dim = dim(ncvar_get(ncin,"orog")),
                       dimnames = list(longitude= ncin[["dim"]][["lon"]][["vals"]],
                                       latitude= ncin[["dim"]][["lat"]][["vals"]]))
   rm(ncin)
@@ -77,16 +81,19 @@ Temperature_afterburner<-function(temp_file,pressure_file,surf_gepo,req_press_le
   
   pressure<-ff(array(0.00),dim =dim(temp_data))
   
-  result<- array(.Fortran("press_calc",ps=as.numeric(surface_pressure[]),
+  DIM<-dim(temp_data)
+  
+  result<- array(.Fortran("press_calc",
+                          m=as.integer(DIM[1]),
+                          n=as.integer(DIM[2]),
+                          o=as.integer(DIM[3]),
+                          p=as.integer(DIM[4]),
+                          ps=as.numeric(surface_pressure[]),
                           p0=as.numeric(p0),
                           a=as.numeric(a),
                           b=as.numeric(b),
-                          m=as.integer(DIM[1]),
-                          n=as.integer(DIM[2]),
-                          o=as.integer(length(a)),
-                          p=as.integer(DIM[3]),
                           press=as.numeric(pressure[]))$press,
-                 dim =c(DIM[1],DIM[2],length(a),DIM[3]))
+                 dim =DIM)
   
   pressure<-ff(result,dim = dim(temp_data),dimnames = dimnames(temp_data))
   
@@ -108,14 +115,15 @@ Temperature_afterburner<-function(temp_file,pressure_file,surf_gepo,req_press_le
   
   dim(pressure_hlf)
   
-  result<- array(.Fortran("press_calc",ps=as.numeric(surface_pressure[]),
+  result<- array(.Fortran("press_calc",
+                          m=as.integer(DIM[1]),
+                          n=as.integer(DIM[2]),
+                          o=as.integer(length(b_bnds)),
+                          p=as.integer(DIM[4]),
+                          ps=as.numeric(surface_pressure[]),
                           p0=as.numeric(p0),
-                          a=as.numeric(a_bnds),
-                          b=as.numeric(b_bnds),
-                          m=as.integer(output_DIM[1]),
-                          n=as.integer(output_DIM[2]),
-                          o=as.integer(output_DIM[3]),
-                          p=as.integer(output_DIM[4]),
+                          a=as.numeric(a),
+                          b=as.numeric(b),
                           press=as.numeric(pressure_hlf[]))$press,
                  dim =output_DIM)
   
@@ -147,16 +155,16 @@ Temperature_afterburner<-function(temp_file,pressure_file,surf_gepo,req_press_le
   output_array<-ff(array(0.00,dim =output_DIM),dim =output_DIM)
   
   result<- array(.Fortran("ta_vertical_interpolation",
-                          ta_on_model_level=as.numeric(temp_data[]),
-                          pres=as.numeric(req_press_levels),
-                          geo= as.numeric(surf_gepo_array[]),
-                          pressure_full_level=as.numeric(pressure[]),
                           m=as.integer(DIM[1]),
                           n=as.integer(DIM[2]),
                           o=as.integer(DIM[3]),
                           p=as.integer(DIM[4]),
                           req = as.integer(length(req_press_levels)),
+                          pres=as.numeric(req_press_levels),
+                          geo= as.numeric(surf_gepo_array[]),
+                          pressure_full_level=as.numeric(pressure[]),
                           surface_pressure=as.numeric(surface_pressure[]),
+                          ta_on_model_level=as.numeric(temp_data[]),
                           ta_on_press_level=as.numeric(output_array[]))$ta_on_press_level,
                  dim =output_DIM)
   
